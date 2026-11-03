@@ -1,0 +1,1156 @@
+{
+  "datasets": [
+    {
+      "name": "superstore_orders",
+      "displayName": "Superstore Orders",
+      "config": {
+        "source": "dbacademy.default.superstore_cleaned",
+        "measures": [
+          {
+            "name": "total_sales",
+            "expr": "SUM(`Sales`)",
+            "displayName": "Total Sales",
+            "format": {
+              "type": "currency",
+              "currencyCode": "USD",
+              "abbreviation": "compact"
+            }
+          },
+          {
+            "name": "total_profit",
+            "expr": "SUM(`Profit`)",
+            "displayName": "Total Profit",
+            "format": {
+              "type": "currency",
+              "currencyCode": "USD",
+              "abbreviation": "compact"
+            }
+          },
+          {
+            "name": "total_quantity",
+            "expr": "SUM(`Quantity`)",
+            "displayName": "Total Quantity"
+          },
+          {
+            "name": "customer_count",
+            "expr": "COUNT(DISTINCT `Customer_ID`)",
+            "displayName": "Total Customers"
+          },
+          {
+            "name": "profit_margin_pct",
+            "expr": "SUM(`Profit`) / SUM(`Sales`) * 100",
+            "displayName": "Profit Margin %",
+            "comment": "Overall profit margin - total profit divided by total sales, as a percentage"
+          }
+        ],
+        "version": "1.1",
+        "comment": "Superstore order line metrics for sales, profit, quantity, customers, and profit margin",
+        "dimensions": [
+          {
+            "name": "Order_Date",
+            "expr": "`Order_Date`"
+          },
+          {
+            "name": "Ship_Mode",
+            "expr": "`Ship_Mode`"
+          },
+          {
+            "name": "Customer_ID",
+            "expr": "`Customer_ID`"
+          },
+          {
+            "name": "Segment",
+            "expr": "`Segment`"
+          },
+          {
+            "name": "Region",
+            "expr": "`Region`"
+          },
+          {
+            "name": "State",
+            "expr": "`State`"
+          },
+          {
+            "name": "Category",
+            "expr": "`Category`"
+          },
+          {
+            "name": "Sub_Category",
+            "expr": "`Sub-Category`"
+          },
+          {
+            "name": "Product_Name",
+            "expr": "`Product_Name`"
+          }
+        ]
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "00f27651",
+      "displayName": "Superstore Sales Analytics Dashboard",
+      "layout": [
+        {
+          "widget": {
+            "name": "dashboard_title",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# SUPERSTORE SALES DASHBOARD"
+              ]
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 10,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "insights_panel",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## INSIGHTS\n",
+                "- The **Consumer** segment is the top revenue contributor (51% of sales).\n",
+                "- **Standard Class** is the most popular shipping mode; **Same Day** is the least.\n",
+                "- **West** and **East** lead in sales and profit, driven by California and New York.\n",
+                "- **Technology** is the top category (36% of sales); **Phones** is the best-selling sub-category.\n",
+                "- **November** has the highest revenue of any month."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 11
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_sales",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Total Sales ($)",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(total_sales)",
+                  "rowNumber": 0,
+                  "format": {
+                    "abbreviation": "none",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "places": 2,
+                      "type": "max"
+                    },
+                    "type": "number-currency"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "monthly_sales_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "monthly(Order_Date)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `Order_Date`)"
+                    },
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    },
+                    {
+                      "name": "measure(total_profit)",
+                      "expression": "MEASURE(`total_profit`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Monthly Sales & Profit Trend"
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#0F7B7B",
+                  "#C2185B"
+                ],
+                "marker": {
+                  "shape": "circle"
+                }
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(Order_Date)",
+                  "displayName": "Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fields": [
+                    {
+                      "fieldName": "measure(total_sales)",
+                      "displayName": "Total Sales ($)"
+                    },
+                    {
+                      "fieldName": "measure(total_profit)",
+                      "displayName": "Total Profit ($)"
+                    }
+                  ],
+                  "format": {
+                    "abbreviation": "compact",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "places": 1,
+                      "type": "max"
+                    },
+                    "type": "number-currency"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 7,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_profit",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(total_profit)",
+                      "expression": "MEASURE(`total_profit`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Total Profit ($)",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(total_profit)",
+                  "rowNumber": 0,
+                  "format": {
+                    "abbreviation": "none",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "places": 2,
+                      "type": "max"
+                    },
+                    "type": "number-currency"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "sales_by_region",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "Region",
+                      "expression": "`Region`"
+                    },
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    },
+                    {
+                      "name": "measure(total_profit)",
+                      "expression": "MEASURE(`total_profit`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Sales & Profit by Region"
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#0F7B7B",
+                  "#4CAF7D"
+                ],
+                "layout": "group"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Region",
+                  "displayName": "Region",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fields": [
+                    {
+                      "fieldName": "measure(total_sales)",
+                      "displayName": "Total Sales ($)"
+                    },
+                    {
+                      "fieldName": "measure(total_profit)",
+                      "displayName": "Total Profit ($)"
+                    }
+                  ],
+                  "format": {
+                    "abbreviation": "compact",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "places": 1,
+                      "type": "max"
+                    },
+                    "type": "number-currency"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 3,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_profit_margin",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(profit_margin_pct)",
+                      "expression": "MEASURE(`profit_margin_pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Profit Margin (%)",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(profit_margin_pct)",
+                  "rowNumber": 0,
+                  "format": {
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "places": 2,
+                      "type": "max"
+                    },
+                    "type": "number-plain"
+                  },
+                  "formatTemplate": "{{ @formatted }}%"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_top_subcategories",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    },
+                    {
+                      "name": "Sub_Category",
+                      "expression": "`Sub_Category`"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "MEASURE(`total_sales`)"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Top 5 Sub-Categories by Sales"
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#0F7B7B"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(total_sales)",
+                  "format": {
+                    "abbreviation": "compact",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "places": 1,
+                      "type": "max"
+                    },
+                    "type": "number-currency"
+                  },
+                  "displayName": "Total Sales ($)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Sub_Category",
+                  "displayName": "Sub-Category",
+                  "scale": {
+                    "categorySize": {
+                      "number": 5,
+                      "type": "number-of-categories"
+                    },
+                    "type": "categorical",
+                    "sort": {
+                      "by": "measure-reversed",
+                      "measure": {
+                        "fieldName": "measure(total_sales)"
+                      }
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 3,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_quantity",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(total_quantity)",
+                      "expression": "MEASURE(`total_quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Total Quantity"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(total_quantity)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_top_states",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    },
+                    {
+                      "name": "State",
+                      "expression": "`State`"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "MEASURE(`total_sales`)"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Top 10 States by Sales"
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#0F7B7B"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(total_sales)",
+                  "format": {
+                    "abbreviation": "compact",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "places": 1,
+                      "type": "max"
+                    },
+                    "type": "number-currency"
+                  },
+                  "displayName": "Total Sales ($)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "State",
+                  "displayName": "State",
+                  "scale": {
+                    "categorySize": {
+                      "number": 10,
+                      "type": "number-of-categories"
+                    },
+                    "type": "categorical",
+                    "sort": {
+                      "by": "measure-reversed",
+                      "measure": {
+                        "fieldName": "measure(total_sales)"
+                      }
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 7,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_customers",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(customer_count)",
+                      "expression": "MEASURE(`customer_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Total Customers"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(customer_count)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 10,
+            "y": 1,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "pie_sales_by_segment",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    },
+                    {
+                      "name": "Segment",
+                      "expression": "`Segment`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Sales by Segment"
+              },
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "measure(total_sales)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "total_sales"
+                },
+                "color": {
+                  "fieldName": "Segment",
+                  "displayName": "Segment",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 3,
+            "width": 2,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_sales_by_ship_mode",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "Ship_Mode",
+                      "expression": "`Ship_Mode`"
+                    },
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Sales by Ship Mode"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Ship_Mode",
+                  "displayName": "Ship_Mode",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(total_sales)",
+                  "displayName": "total_sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Ship_Mode",
+                  "displayName": "Ship_Mode",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 3,
+            "width": 2,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "sales_by_category",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "measure(total_sales)",
+                      "expression": "MEASURE(`total_sales`)"
+                    },
+                    {
+                      "name": "Category",
+                      "expression": "`Category`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Sales by Category"
+              },
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "measure(total_sales)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "total_sales"
+                },
+                "color": {
+                  "fieldName": "Category",
+                  "displayName": "Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 7,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "filter_order_date",
+            "queries": [
+              {
+                "name": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Order_Date",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "Order_Date",
+                      "expression": "`Order_Date`"
+                    },
+                    {
+                      "name": "Order_Date_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Order Date"
+              },
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Order_Date",
+                    "queryName": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Order_Date"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "filter_category",
+            "queries": [
+              {
+                "name": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Category",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "Category",
+                      "expression": "`Category`"
+                    },
+                    {
+                      "name": "Category_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Category"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Category",
+                    "queryName": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Category"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 11,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "filter_region",
+            "queries": [
+              {
+                "name": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Region",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "Region",
+                      "expression": "`Region`"
+                    },
+                    {
+                      "name": "Region_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Region"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Region",
+                    "queryName": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Region"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 11,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "filter_segment",
+            "queries": [
+              {
+                "name": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Segment",
+                "query": {
+                  "datasetName": "superstore_orders",
+                  "fields": [
+                    {
+                      "name": "Segment",
+                      "expression": "`Segment`"
+                    },
+                    {
+                      "name": "Segment_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Segment"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Segment",
+                    "queryName": "dashboards/01f1d75b3f761629b8ede5aa4f519aed/datasets/01f1d75b680c1f8ba6e06ff47022cb1c_Segment"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 11,
+            "width": 3,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#F5F5F5",
+        "dark": "#1A1E22"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FCFCFD",
+        "dark": "#22282D"
+      },
+      "widgetBorderColor": {
+        "light": "#FCFCFD",
+        "dark": "#22282D"
+      },
+      "visualizationColors": [
+        "#0F7B7B",
+        "#C2185B",
+        "#4CAF7D",
+        "#C89930",
+        "#2375A8"
+      ],
+      "widgetHeaderAlignment": "LEFT",
+      "widgetCornerRadius": 16,
+      "widgetShadow": 10,
+      "fontSettings": {
+        "base": {
+          "fontFamily": "Inter"
+        }
+      },
+      "visualizationColorMappings": [
+        {
+          "value": "Furniture",
+          "color": "#0F7B7B"
+        },
+        {
+          "value": "Office Supplies",
+          "color": "#4CAF7D"
+        },
+        {
+          "value": "Technology",
+          "color": "#C2185B"
+        },
+        {
+          "value": "Consumer",
+          "color": "#0F7B7B"
+        },
+        {
+          "value": "Corporate",
+          "color": "#4CAF7D"
+        },
+        {
+          "value": "Home Office",
+          "color": "#C2185B"
+        }
+      ]
+    },
+    "applyModeEnabled": false
+  }
+}
